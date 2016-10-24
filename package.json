@@ -1,0 +1,24 @@
+{
+  "name": "meetup",
+  "version": "1.0.0",
+  "description": "Event planner app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MathanKA/Meet-Up-Planner.git"
+  },
+  "keywords": [
+    "event",
+    "gulp",
+    "js"
+  ],
+  "author": "Mathan K A",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MathanKA/Meet-Up-Planner/issues"
+  },
+  "homepage": "https://github.com/MathanKA/Meet-Up-Planner#readme"
+}

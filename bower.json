@@ -1,0 +1,25 @@
+{
+  "name": "meetup",
+  "description": "Event planner app",
+  "main": "index.js",
+  "authors": [
+    "Mathan K A"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "event",
+    "gulp",
+    "js"
+  ],
+  "homepage": "https://github.com/MathanKA/Meet-Up-Planner",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.7.0"
+  }
+}
