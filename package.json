@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/MathanKA/Meet-Up-Planner/issues"
   },
-  "homepage": "https://github.com/MathanKA/Meet-Up-Planner#readme"
+  "homepage": "https://github.com/MathanKA/Meet-Up-Planner#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.3.2"
+  }
 }

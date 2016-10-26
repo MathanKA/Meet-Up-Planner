@@ -20,6 +20,8 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.7.0"
+    "polymer": "GoogleWebComponents#^1.7.0",
+    "gold-elements": "PolymerElements/gold-elements#^1.0.1",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7"
   }
 }
