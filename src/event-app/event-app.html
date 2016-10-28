@@ -21,9 +21,105 @@
 <link rel="import" href="../bower_components/neon-animation/animations/slide-down-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="event-home.html">
 
 <dom-module id="event-app">
     <template>
+      <style>
+        :host {
+        --primary-color: #f52757;
+        --secondary-color: #1e88e5;
+        --light-gray: #eceff1;
+        --dark-gray: #263238;
+        --primary-text: rgba(0, 0, 0, 0.8);
+        --secondary-text: rgba(0, 0, 0, 0.6);
+        --disabled-color: #8c8c8c;
+        --line-spacing: 150%;
+        --paper-input-container-focus-color: var(--secondary-color);
+        --paper-input-container-invalid-color: var(--primary-color);
+        visibility: hidden;
+
+        background-color: var(--light-gray);
+
+        --paper-button: {
+          background-color: var(--secondary-color);
+          color: #fff;
+        };
+
+        --paper-button-disabled: {
+          background-color: var(--disabled-color);
+          color: #ddd;
+        };
+      }
+
+      neon-animated-pages {
+        height: 100%;
+        min-height: 100vh;
+        background-color: var(--light-gray);
+      }
+
+      .header-theme {
+        background-color: #fff;
+        justify-content: space-between;
+      }
+
+      .drawer-header {
+        background-color: var(--dark-gray);
+      }
+
+      .content {
+        font-size: 3em;
+      }
+
+      .title {
+        font-family: 'Rock Salt', cursive;
+        color: var(--primary-color);
+        padding: 10px;
+      }
+
+      .title:hover {
+        cursor: pointer;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      a.navlink {
+        padding: 10px;
+        font-size: 0.75em;
+        color: var(--secondary-text);
+      }
+
+      a.navlink:hover {
+        cursor: pointer;
+      }
+
+      a.item {
+        height: 100%;
+        width: 100%;
+      }
+
+      paper-ripple {
+        color: #aaa;
+      }
+
+      paper-tab {
+        --paper-tab-ink: #aaa;
+      }
+
+      paper-item {
+        cursor: pointer;
+      }
+
+
+      @media (max-width: 599px) {
+        .header-theme {
+          justify-content: flex-start;
+        }
+      }
+      </style>
         <app-location route="{{route}}"></app-location>
         <app-route
             route="{{route}}"
@@ -59,9 +155,7 @@
                     <app-toolbar class="header-theme">
                         <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
                         <div class="title" style="position: relative">
-                          <a href="/">{{title}}>
-                              <img src="image/logo.png" alt="" class="my-logo">
-                          </a>
+                          <a href="/">{{title}}</a>
                         </div>
                         <iron-selector selected="[[page]]" attr-for-selected="name" hidden$="{{!wideLayout}}">
                           <a class="navlink" name="signin" href="/signin/" hidden$="[[signedIn]]">Sign In</a>
@@ -78,11 +172,11 @@
                   attr-for-selected="name"
                   entry-animation="slide-from-bottom-animation"
                   exit-animation="slide-down-animation">
-                  <meetup-home name="home"></meetup-home>
-                  <meetup-events name="events"></meetup-events>
-                  <meetup-signin id="signinPage" name="signin" on-sign-in="signIn" page="[[page]]"></meetup-signin>
-                  <meetup-signup name="signup" on-sign-up="signUp" page="[[page]]"></meetup-signup>
-                  <meetup-user name="user" user="[[user]]"></meetup-user>
+                  <event-home name="home"></event-home>
+                  <event-list name="events"></event-list>
+                  <event-signin id="signinPage" name="signin" on-sign-in="signIn" page="[[page]]"></event-signin>
+                  <event-signup name="signup" on-sign-up="signUp" page="[[page]]"></event-signup>
+                  <event-user name="user" user="[[user]]"></event-user>
                 </neon-animated-pages>
             </app-header-layout>
         </app-drawer-layout>
@@ -167,7 +261,7 @@
       _pageChanged: function(page, oldPage) {
         if (page) {
           this.importHref(
-            this.resolveUrl('meetup-' + page + '.html'), null, null, true);
+            this.resolveUrl('event-' + page + '.html'), null, null, true);
           this.$.drawer.opened = false;
         }
       },

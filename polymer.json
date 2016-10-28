@@ -1,0 +1,18 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/event-app/event-app.html",
+  "fragments": [
+    "src/event-app/event-home.html",
+    "src/event-app/event-section.html"
+  ],
+  "sourceGlobs": [
+   "src/**/*",
+   "images/**/*",
+   "bower.json"
+  ],
+  "includeDependencies": [
+    "manifest.json",
+    "images/*",
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}

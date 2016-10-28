@@ -4,10 +4,23 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="/manifest.json">
     <meta name="description" content="Event planner">
     <title>Event Planner App</title>
     <link rel="icon" href="/images/favicon.ico">
-    <script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="bower_components/polymerfire/firebase-app.html">
+    <!-- App element links -->
+    <link rel="import" href="/src/event-app/event-app.html">
+    <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Slabo+13px" rel="stylesheet">
+    <style>
+      body {
+        background-color: #fff;
+        font-family: Roboto;
+      }
+    </style>
+<!--     <script>
       // Setup Polymer options
       window.Polymer = {
         dom: 'shadow',
@@ -51,11 +64,19 @@
           navigator.serviceWorker.register('/service-worker.js');
         });
       }
-    </script>
-<!-- App element links -->
-    <link rel="import" href="polymer-elements/elements.html">
+    </script> -->
+
 </head>
 <body>
     <event-app></event-app>
+    <script>
+            // Load pre-caching Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
+    <script src="bower_components/moment/moment.js"></script>
 </body>
 </html>
