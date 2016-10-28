@@ -1,0 +1,173 @@
+<!--
+
+
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../..//bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="event-container.html">
+
+<dom-module id="event-item">
+	<template>
+		<style>
+			:host {
+				margin: 20px;
+				visibility: hidden;
+			}
+
+			event-container {
+				max-width: 450px;
+				margin: 20px;
+			}
+
+			div.details {
+				padding: 20px;
+			}
+
+			div.detail {
+				margin: 10px;
+				color: var(--secondary-text);
+			}
+
+			span.text {
+				color: var(--primary-text);
+			}
+
+			#editButton {
+				color: var(--secondary-text);
+			}
+
+			#editButton:hover {
+				cursor: pointer;
+			}
+		</style>
+
+		<event-container heading="[[eventTitle]]" image="[[eventImage]]">
+			<div class="details">
+				<div class="detail">
+					<span class="text"><h3>[[eventType]]</h3></span>
+				</div>
+				<div class="detail">
+					Host: <span class="text">[[eventHost]]</span>
+				</div>
+				<div class="detail">
+					Where: <span class="text">[[eventLocation]]</span>
+				</div>
+				<div class="detail">
+					When: <span class="text">[[formattedStart]]</span> to <span class="text">[[formattedEnd]]</span>
+				</div>
+				<div class="detail">
+					Guests: <span class="text">[[eventGuests]]</span>
+				</div>
+				<div class="detail">
+					<i>[[eventInfo]]</i>
+				</div>
+				<div>
+					<paper-icon-button id="editButton" icon="create" alt="Edit Event" on-tap="openEvent"></paper-icon-button>
+					<paper-tooltip for="editButton">Edit Event</paper-tooltip>
+				</div>
+			</div>
+		</event-container>
+	</template>
+	<script>
+
+	Polymer({
+
+		is: 'event-item',
+
+		behaviors: [
+			Polymer.NeonAnimationRunnerBehavior
+		],
+
+		properties: {
+			entryAnimation: {
+				value: 'fade-in-animation'
+			},
+			exitAnimation: {
+				value: 'fade-out-animation'
+			},
+			eventTitle: {
+				type: String,
+				notify: true
+			},
+			eventType: {
+				type: String,
+				notify: true
+			},
+			eventHost: {
+				type: String,
+				notify: true
+			},
+			eventStart: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventEnd: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			formattedStart: {
+				type: String,
+				notify: true
+			},
+			formattedEnd: {
+				type: String,
+				notify: true
+			},
+			eventGuests: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventLocation: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventInfo: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventImage: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventId: {
+				type: String,
+				value: '',
+				notify: true
+			}
+		},
+
+		ready: function() {
+			this.style.visibility = 'visible';
+			this.playAnimation('entry');
+		},
+
+		// An open event for the event-editor, supplying this event's information
+		openEvent: function(e, detail) {
+			this.fire('open', {
+				eventTitle: this.eventTitle,
+				eventType: this.eventType,
+				eventHost: this.eventHost,
+				eventStart: this.eventStart,
+				eventEnd: this.eventEnd,
+				eventGuests: this.eventGuests,
+				eventLocation: this.eventLocation,
+				eventInfo: this.eventInfo,
+				eventImage: this.eventImage,
+				eventId: this.eventId
+			}, {bubbles: false});
+		}
+
+	});
+
+	</script>
+</dom-module>

@@ -1,0 +1,289 @@
+<!--
+
+SIGNUP VIEW
+
+This view handles user creation, and is only imported into meetup-app when requested.
+
+ -->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="event-section.html">
+<link rel="import" href="event-title.html">
+
+<dom-module id="event-signup">
+	<template>
+		<style is="custom-style">
+			:host {
+			}
+
+			form {
+				background-color: var(--light-gray);
+				padding: 0 0 60px 0;
+			}
+
+			event-section {
+				margin: 0 80px;
+			}
+
+			section {
+				padding: 40px 20px;
+			}
+
+			[dead-center] {
+				@apply(--layout);
+				@apply(--layout-center-center);
+			}
+
+			section.submit {
+				padding: 0;
+			}
+
+			paper-input {
+				width: 400px;
+				margin: 10px 20px;
+			}
+
+			paper-button {
+				margin: 0 80px;
+			}
+
+
+			@media (max-width: 739px) {
+				paper-input {
+					width: 75vw;
+				}
+			}
+		</style>
+
+		<event-title title="Sign Up"></event-title>
+
+		<!-- The form for signing up. Note, the form is purely for semantic value, and does not actually submit information; rather the submit button fires a signUp event for the meetup-app component to handle. This allowed me more freedom in submitting information, and avoided the headache of form submission in a single-page application.
+		Each paper-input includes a label, an aria-label, immediate validation, as well as all the other attributes included with the native input element. -->
+		<form>
+			<section dead-center>
+				<event-section>
+					<paper-input
+						id="signupfocus"
+						autocomplete="given-name"
+						label="First Name"
+						value="{{firstname}}"
+						required
+						auto-validate
+						error-message="Requires text only!"
+						pattern="[a-zA-Z]+"
+						invalid="{{signupFirst}}"
+						tabindex="0">
+					</paper-input>
+					<paper-input
+						autocomplete="family-name"
+						label="Last Name"
+						value="{{lastname}}"
+						required
+						auto-validate
+						error-message="Requires text only!"
+						pattern="[a-zA-Z]+"
+						invalid="{{signupLast}}">
+					</paper-input>
+					<paper-input
+						autocomplete="email"
+						label="Email"
+						type="email"
+						value="{{email}}"
+						required
+						auto-validate
+						error-message="Please enter an email address!"
+						invalid="{{signupEmail}}">
+					</paper-input>
+					<paper-input
+						autocomplete="password"
+						label="Password"
+						type="password"
+						value="{{password}}"
+						required
+						error-message="{{errorPass}}"
+						invalid="{{signupPass}}">
+					</paper-input>
+					<paper-input
+						label="Job Title (optional)"
+						autocomplete="organization-title"
+						value="{{jobTitle}}">
+					</paper-input>
+					<paper-input
+						label="Profile Image URL (optional)"
+						value="{{image}}">
+					</paper-input>
+				</event-section>
+			</section>
+
+			<section class="submit" dead-center>
+				<paper-button raised on-tap="signUp" type="submit" disabled="[[!formValid]]" aria-label="Sign Up">Sign Up</paper-button>
+			</section>
+		</form>
+
+	</template>
+	<script>
+
+	Polymer({
+
+		is: 'event-signup',
+
+		properties: {
+			firstname: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			lastname: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			email: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			password: {
+				type: String,
+				value: '',
+				notify: true,
+				observer: '_passValidity'
+			},
+			jobTitle: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			image: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			page: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			signupFirst: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			signupLast: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			signupEmail: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			signupPass: {
+				type: Boolean,
+				notify: true
+			},
+			formValid: {
+				type: Boolean,
+				notify: true
+			}
+		},
+
+		ready: function() {
+			this.formValid = false;
+			this.signupPass = false;
+		},
+
+		observers: [
+			'_compareRoute(page)',
+			'_validityCheck(signupFirst, signupLast, signupEmail, signupPass, password)'
+		],
+
+		_passValidity: function(val) {
+			var regex1 = new RegExp('[a-zA-Z]');
+			var regex2 = new RegExp('[0-9]');
+			var passLength = this.password.length;
+
+			if (!(regex1.test(val)) &&
+				!(regex2.test(val)) &&
+				passLength < 8) {
+				this.errorPass = 'At least 8 characters, with numbers and letters';
+				this.signupPass = true;
+			}
+			else if (!(regex1.test(val)) &&
+				!(regex2.test(val))) {
+				this.errorPass = 'Needs numbers and letters';
+				this.signupPass = true;
+			}
+			else if (!(regex1.test(val)) &&
+				passLength < 8) {
+				this.errorPass = 'At least 8 characters, with letters';
+				this.signupPass = true;
+			}
+			else if (!(regex2.test(val)) &&
+				passLength < 8) {
+				this.errorPass = 'At least 8 characters, with numbers';
+				this.signupPass = true;
+			}
+			else if (!(regex1.test(val))) {
+				this.errorPass = 'Needs letters';
+				this.signupPass = true;
+			}
+			else if (!(regex2.test(val))) {
+				this.errorPass = 'Needs numbers';
+				this.signupPass = true;
+			}
+			else if (passLength < 8) {
+				this.errorPass = 'At least 8 characters';
+				this.signupPass = true;
+			}
+			else {
+				this.errorPass = '';
+				this.signupPass = false;
+			}
+		},
+
+		// Signup event fired for meetup-app to handle, including new user information
+		signUp: function(e, detail) {
+			this.fire('sign-up', {
+				firstname: this.firstname,
+				lastname: this.lastname,
+				email: this.email,
+				password: this.password,
+				job: this.jobTitle,
+				image: this.image
+			}, {bubbles: false});
+		},
+
+		// This observer watches the current route.
+		// If the current route is "signup", have the first input focused.
+		_compareRoute: function(page) {
+			var self = this;
+			if (page === 'signup') {
+				setTimeout(function() {
+					self.$.signupfocus.focus();
+				}, 100);
+			}
+		},
+
+		// Simple form validation, preventing the user from submitting unless all required inputs are valid
+		_validityCheck: function(signupFirst, signupLast, signupEmail, signupPass, password) {
+			if (signupFirst === false &&
+				signupLast === false &&
+				signupEmail === false &&
+				signupPass === false &&
+				password !== '') {
+				this.formValid = true;
+			}
+			else {
+				this.formValid = false;
+			}
+		}
+
+	});
+
+	</script>
+</dom-module>

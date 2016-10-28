@@ -1,0 +1,116 @@
+<!--
+
+USER INFO CARD
+
+Similiar to the event component, this provides more info about the currently signed-in user.
+
+ -->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="event-container.html">
+
+<dom-module id="event-user-card">
+	<template>
+		<style>
+			:host {
+				margin: 20px;
+				visibility: hidden;
+			}
+
+			event-container {
+				max-width: 400px;
+				margin: 20px;
+			}
+
+			div.details {
+				padding: 20px;
+			}
+
+			div.detail {
+				margin: 10px;
+				color: var(--secondary-text);
+			}
+
+			span.text {
+				color: var(--primary-text);
+			}
+		</style>
+
+		<event-container heading="Your Info:" image="[[image]]">
+			<div class="details">
+				<div class="detail">
+					Firstname: <span class="text">[[firstname]]</span>
+				</div>
+				<div class="detail">
+					Lastname: <span class="text">[[lastname]]</span>
+				</div>
+				<div class="detail">
+					Email: <span class="text">[[email]]</span>
+				</div>
+				<template is="dom-if" if="[[job]]">
+					<div class="detail">
+						Job Title: <span class="text">[[job]]</span>
+					</div>
+				</template>
+			</div>
+		</event-container>
+	</template>
+	<script>
+
+	Polymer({
+
+		is: 'event-user-card',
+
+		behaviors: [
+			Polymer.NeonAnimationRunnerBehavior
+		],
+
+		properties: {
+			entryAnimation: {
+				value: 'fade-in-animation'
+			},
+			exitAnimation: {
+				value: 'fade-out-animation'
+			},
+			title: {
+				type: String,
+				notify: true
+			},
+			firstname: {
+				type: String,
+				notify: true
+			},
+			lastname: {
+				type: String,
+				notify: true
+			},
+			job: {
+				type: String,
+				notify: true
+			},
+			email: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			image: {
+				type: String,
+				value: '',
+				notify: true
+			}
+		},
+
+		ready: function() {
+			this.style.visibility = 'visible';
+			this.playAnimation('entry');
+		}
+
+	});
+
+	</script>
+</dom-module>

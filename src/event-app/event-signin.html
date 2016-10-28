@@ -1,0 +1,190 @@
+<!--
+
+SIGN-IN VIEW
+
+Much like the sign-up view, this submits info for user authentication.
+
+ -->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="event-section.html">
+<link rel="import" href="event-title.html">
+
+<dom-module id="event-signin">
+	<template>
+		<style is="custom-style">
+
+			event-section {
+				margin: 0 80px;
+			}
+
+			section {
+				padding: 40px 20px;
+			}
+
+			[dead-center] {
+				@apply(--layout);
+				@appply(--layout-wrap);
+				@apply(--layout-center-center);
+			}
+
+			section.submit {
+				padding: 0;
+			}
+
+			h2.error {
+				color: black;
+				font-weight: lighter;
+				margin: 0 10px;
+			}
+
+			#iconError {
+				color: var(--primary-color);
+				width: 30px;
+				height: 30px;
+				display: block;
+			}
+
+			paper-input {
+				width: 400px;
+				margin: 10px 20px;
+			}
+
+			paper-button {
+				margin: 0 80px;
+			}
+
+			.box {
+				width: 50px;
+				height: 50px;
+				background-color: red;
+			}
+
+
+			@media (max-width: 739px) {
+				paper-input {
+					width: 75vw;
+				}
+			}
+		</style>
+
+		<event-title title="Sign In"></event-title>
+
+		<!-- Just as with the sign-up view, the form element is for semantic purposes only; no form submission is done with the form element. The sign-in button fires an event with user info for the meetup-app to handle. -->
+		<form>
+			<section dead-center>
+				<event-section>
+					<paper-input
+						id="signinfocus"
+						autocomplete="email"
+						auto-validate
+						error-message="Don't forget your email!"
+						label="Email"
+						type="email"
+						value="{{email}}"
+						required>
+					</paper-input>
+					<paper-input
+						autocomplete="current-password"
+						auto-validate
+						error-message="Don't forget your password!"
+						label="Password"
+						type="password"
+						value="{{password}}"
+						required>
+					</paper-input>
+				</event-section>
+			</section>
+
+			<section class="submit" dead-center>
+				<paper-button
+				raised
+				on-tap="signIn"
+				aria-label="Sign In"
+				type="submit"
+				disabled$="[[!canSubmit]]">Sign In</paper-button>
+			</section>
+		</form>
+
+		<section dead-center hidden$="{{!signInError}}">
+			<div>
+				<iron-icon id="iconError" icon="error"></iron-icon>
+			</div>
+			<h2 class="error">Whoops! [[errorMessage]]</h2>
+		</section>
+
+	</template>
+	<script>
+
+	Polymer({
+
+		is: 'event-signin',
+
+		properties: {
+			email: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			password: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			page: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			canSubmit: {
+				type: Boolean,
+				notify: true
+			},
+			signInError: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			errorMessage: {
+				type: String,
+				notify: true
+			}
+		},
+
+		observers: [
+			'_compareRoute(page)',
+			'_inputsCheck(email, password)'
+		],
+
+		// Sign in event, with user info
+		signIn: function(e, detail) {
+			this.fire('sign-in', {email: this.email, password: this.password}, {bubbles: false});
+		},
+
+		// Observer which focuses the first input if the current view is "signin"
+		_compareRoute: function(page) {
+			var self = this;
+			if (page === 'signin') {
+				setTimeout(function() {
+					self.$.signinfocus.focus();
+				}, 100);
+			}
+		},
+
+		_inputsCheck: function(email, password) {
+			if (email !== '' && password !== '') {
+				this.canSubmit = true;
+			}
+			else {
+				this.canSubmit = false;
+			}
+		}
+
+	});
+
+	</script>
+</dom-module>

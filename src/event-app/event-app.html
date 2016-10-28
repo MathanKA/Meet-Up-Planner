@@ -1,26 +1,26 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/font-roboto/roboto.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../bower_components/app-layout/helpers/helpers.html">
-<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/app-route/app-location.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
-<link rel="import" href="../bower_components/neon-animation/animations/slide-from-bottom-animation.html">
-<link rel="import" href="../bower_components/neon-animation/animations/slide-down-animation.html">
-<link rel="import" href="../bower_components/neon-animation/animations/fade-in-animation.html">
-<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/font-roboto/roboto.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/helpers/helpers.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-bottom-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-down-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="event-home.html">
 
 <dom-module id="event-app">
@@ -127,11 +127,24 @@
             data="{{routeData}}"
             tail="{{subroute}}">
         </app-route>
-        <app-drawer-layout fullbleed>
+    <firebase-auth
+      id="auth"
+      app-name="events"
+      signed-in="{{signedIn}}"
+      user="{{user}}">
+    </firebase-auth>
+	
+    <firebase-document
+      id="userStuff"
+      app-name="events"
+      path="/users/[[user.uid]]/info"
+      data="{{userInfo}}">
+    </firebase-document>
+        <app-drawer-layout fullbleed force-narrow>
             <!-- Drawer toggle for smaller screens -->
             <app-drawer id="drawer">
-                <app-toolbar>Menu</app-toolbar>
-                <paper-menu selected="[[page]]" attr-for-selected="name" role="navigation">
+                <app-toolbar class="drawer-header"></app-toolbar>
+                <paper-menu selected="[[page]]" attr-for-selected="name" >
                     <paper-item name="signin" hidden$="[[signedIn]]">
                         <a class="item" href="/signin/">Sign In</a>
                     </paper-item>
@@ -151,9 +164,9 @@
             </app-drawer>
             <!-- Main content  -->
             <app-header-layout>
-                <app-header condenses reveals shadow threshold="1">
+                <app-header reveals shadow >
                     <app-toolbar class="header-theme">
-                        <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                        <paper-icon-button icon="menu" drawer-toggle hidden$="{{wideLayout}}"></paper-icon-button>
                         <div class="title" style="position: relative">
                           <a href="/">{{title}}</a>
                         </div>
@@ -173,7 +186,7 @@
                   entry-animation="slide-from-bottom-animation"
                   exit-animation="slide-down-animation">
                   <event-home name="home"></event-home>
-                  <event-list name="events"></event-list>
+                  <event-lists name="events"></event-lists>
                   <event-signin id="signinPage" name="signin" on-sign-in="signIn" page="[[page]]"></event-signin>
                   <event-signup name="signup" on-sign-up="signUp" page="[[page]]"></event-signup>
                   <event-user name="user" user="[[user]]"></event-user>
@@ -198,7 +211,7 @@
         },
         title: {
           type: String,
-          value: 'Coimbatore\'s Event!'
+          value: 'Coimbatore\'s Events!'
         },
         wideLayout: {
           type: Boolean,

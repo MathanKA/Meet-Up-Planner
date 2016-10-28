@@ -6,11 +6,11 @@ This is the default view, serving as a landing page.
 
  -->
 
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-behaviors/paper-button-behavior.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-behaviors/paper-button-behavior.html">
 <link rel="import" href="event-section.html">
 
 <dom-module id="event-home">
@@ -80,7 +80,7 @@ This is the default view, serving as a landing page.
                 color: #fff;
             }
 
-            meetup-section {
+            event-section {
                 margin: 20px;
             }
 
@@ -119,7 +119,7 @@ This is the default view, serving as a landing page.
 
         <main>
             <section class="main-section" dead-center>
-                <meetup-section>
+                <event-section>
                     <div dead-center class="title-img" id="title-img">
                         <iron-icon class="event-icon" icon="event"></iron-icon>
                     </div>
@@ -134,11 +134,11 @@ This is the default view, serving as a landing page.
                             </a>
                         </div>
                     </div>
-                </meetup-section>
+                </event-section>
             </section>
 
             <section dead-center class="dark-gray">
-                <meetup-section>
+                <event-section>
                     <div class="subdetail">
                         <h1 class="underline">All the cool kids are doing it</h1>
                             <p class="light">
@@ -161,7 +161,7 @@ This is the default view, serving as a landing page.
                                 </a>
                             </div>
                     </div>
-                </meetup-section>
+                </event-section>
             </section>
 
             <section dead-center class="footer">

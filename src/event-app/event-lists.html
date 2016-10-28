@@ -1,0 +1,184 @@
+<!--
+
+EVENTS VIEW
+
+This view displays all the events in this app's database, organized from oldest to newest. This view is only visible to signed-in users.
+
+ -->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="event-title.html">
+<link rel="import" href="event-item.html">
+<link rel="import" href="event-new-item.html">
+<link rel="import" href="event-editor.html">
+
+<dom-module id="event-lists">
+	<template>
+
+		<style is="custom-style">
+			section {
+				@apply(--layout);
+				@apply(--layout-wrap);
+				@apply(--layout-center-justified);
+				background-color: var(--light-gray);
+			}
+
+			paper-fab {
+				--paper-fab-background: var(--secondary-color);
+				--paper-fab-keyboard-focus-background: #104d82;
+				position: fixed;
+				bottom: 40px;
+				right: 40px;
+				z-index: 5;
+			}
+
+
+			@media (max-width: 599px) {
+				paper-fab {
+					bottom: 20px;
+					right: 20px;
+				}
+			}
+		</style>
+
+		<!-- Acess to events document for editing, with its path determined by functions below -->
+		<firebase-document
+			id="events"
+			app-name="events"
+			data="{{data}}">
+		</firebase-document>
+
+		<!-- Queries the database for events by their unique ID -->
+		<firebase-query
+			id="eventsQuery"
+			app-name="events"
+			path="/events"
+			data="{{queryData}}">
+		</firebase-query>
+
+		<event-title title="Events"></event-title>
+
+		<!-- New event button -->
+		<paper-fab icon="add" label="New Event" on-tap="openNew"></paper-fab>
+
+		<!-- Opened when above button is tapped -->
+		<event-new-item
+			id="newEvent"
+			on-submit="submitInfo">
+		</event-new-item>
+
+		<!-- Opened when the event's edit button is tapped -->
+		<event-editor id="editor" on-delete="delete" on-save="save"></event-editor>
+
+		<!-- Creates new event for every event returned from the firebase query -->
+		<section>
+			<template id="event" is="dom-repeat" items="[[queryData]]" as="event" initial-count="1">
+				<event-item
+					event-title="[[event.title]]"
+					event-type="[[event.type]]"
+					event-host="[[event.host]]"
+					event-image="[[event.image]]"
+					event-start="[[event.start]]"
+					event-end="[[event.end]]"
+					formatted-start="[[event.formattedStart]]"
+					formatted-end="[[event.formattedEnd]]"
+					event-guests="[[event.guests]]"
+					event-location="[[event.location]]"
+					event-info="[[event.info]]"
+					event-id="[[event.$key]]"
+					on-open="openEditor">
+				</event-item>
+			</template>
+		</section>
+
+	</template>
+	<script>
+
+	Polymer({
+
+		is: 'event-lists',
+
+		properties: {
+			myName: {
+				type: String,
+				value: 'Nick'
+			},
+			data: {
+				type: Object
+			}
+		},
+
+		// Save new event information to database under a unique ID, and resets the firebase-document path
+		submitInfo: function(e, detail) {
+			var self = this;
+			var info = e.detail;
+
+			self.data = {
+				title: info.title,
+				image: info.image,
+				type: info.type,
+				host: info.host,
+				start: info.start,
+				end: info.end,
+				formattedStart: moment(info.start).format('MMM Do, YYYY h:mma'),
+				formattedEnd: moment(info.end).format('MMM Do, YYYY h:mma'),
+				guests: info.guests,
+				location: info.location,
+				info: info.info
+			};
+
+			self.$.events.save('/events');
+			self.$.events.path = null;
+		},
+
+		// Opens the new-event dialog box
+		openNew: function() {
+			this.$.newEvent.open();
+			this.$.events.path = null;
+		},
+
+		// Opens the event editor with the event's info
+		openEditor: function(e, detail) {
+			this.$.events.path = '/events/' + e.detail.eventId;
+			this.$.editor.open(e.detail);
+		},
+
+		// Saves the event's info to it's path in the database, and then resets the path
+		save: function(e, detail) {
+			var self = this;
+			var info = e.detail;
+
+			self.data = {
+				title: info.title,
+				image: info.image || '',
+				type: info.type,
+				host: info.host,
+				start: info.start,
+				end: info.end,
+				formattedStart: moment(info.start).format('MMM Do, YYYY h:mma'),
+				formattedEnd: moment(info.end).format('MMM Do, YYYY h:mma'),
+				guests: info.guests,
+				location: info.location,
+				info: info.info || ''
+			};
+
+			self.$.events.setStoredValue(self.$.events.path, self.data)
+				.then(function() {
+					self.$.events.path = null;
+				});
+		},
+
+		// Deletes the event from the database, and the view updates immediately.
+		delete: function(e, detail) {
+			this.$.events.destroy();
+			this.$.events.path = null;
+		}
+
+	});
+
+	</script>
+</dom-module>

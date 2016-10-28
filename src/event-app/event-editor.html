@@ -1,0 +1,328 @@
+<!--
+
+EVENT EDITOR FORM
+
+A dialog box similiar to the new-event component, allowing signed-in users to edit or delete existing events.
+For reference, this component's structure and functionality is almost the exact same as the new-event component. The two don't share a common component only because I found separating the two easier to organize and manage during development, however there is definitely opportunity for proper componentization.
+
+ -->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<dom-module id="event-editor">
+	<template>
+		<style>
+			paper-dialog {
+				width: 80vw;
+				max-height: 80vh;
+				overflow: scroll;
+			}
+
+			form {
+				display: inline-block;
+			}
+
+			.detail {
+				width: 200px;
+				display: inline-block;
+			}
+
+			.padded {
+				padding: 20px;
+			}
+
+			.cancel {
+				background-color: #fff;
+				color: var(--primary-text);
+			}
+
+
+			@media (max-width: 599px) {
+				paper-dialog {
+					width: 100vw;
+				}
+
+				.detail {
+					width: 80%;
+				}
+			}
+		</style>
+
+		<paper-dialog
+			id="editorDialog"
+			entry-animation="scale-up-animation"
+			exit-animation="fade-out-animation"
+			no-cancel-on-outside-click>
+			<h2>Edit Event</h2>
+			<paper-input
+				autofocus
+				class="detail"
+				label="Title"
+				required
+				auto-validate
+				error-message="Required"
+				value="{{eventTitle}}"
+				invalid="{{validTitle}}">
+			</paper-input>
+			<!-- "form" element enables datalist functionality -->
+			<form>
+			<paper-input
+				class="detail"
+				label="Type of Event"
+				required
+				auto-validate
+				error-message="Required"
+				value="{{eventType}}"
+				invalid="{{validType}}"
+				list="edittypes">
+			</paper-input>
+			<datalist id="edittypes">
+				<option value="Party"></option>
+				<option value="Rave"></option>
+				<option value="Picnic"></option>
+				<option value="Hackathon"></option>
+				<option value="Competition"></option>
+				<option value="Study Session"></option>
+			</datalist>
+			</form>
+			<paper-input
+				class="detail"
+				label="Host"
+				required
+				auto-validate
+				error-message="Required"
+				value="{{eventHost}}"
+				invalid="{{validHost}}">
+			</paper-input>
+			<paper-input
+				class="detail"
+				label="Location"
+				required
+				auto-validate
+				autocomplete="street-address"
+				error-message="Required"
+				value="{{eventLocation}}"
+				invalid="{{validLocation}}">
+			</paper-input>
+			<paper-input
+				class="detail"
+				label="Start"
+				required
+				auto-validate
+				error-message="Required"
+				type="datetime-local"
+				value="{{eventStart}}"
+				invalid="{{validStart}}">
+			</paper-input>
+			<paper-input
+				class="detail"
+				label="End"
+				required
+				auto-validate
+				error-message="Required. No earlier than start date."
+				type="datetime-local"
+				value="{{eventEnd}}"
+				invalid="{{validEnd}}"
+				min="[[minEnd]]">
+			</paper-input>
+			<paper-textarea
+				class="detail"
+				label="Guest List"
+				required
+				auto-validate
+				error-message="Required"
+				value="{{eventGuests}}">
+			</paper-textarea>
+			<paper-input
+				class="detail"
+				label="Image URL (optional)"
+				value="{{eventImage}}">
+			</paper-input>
+			<paper-textarea
+				class="detail"
+				label="Extra Info (optional)"
+				value="{{eventInfo}}">
+			</paper-textarea>
+			<div class="padded">
+				<paper-icon-button id="deleteButton" icon="delete" on-tap="deleteEvent" alt="Delete Event"></paper-icon-button>
+				<paper-tooltip for="deleteButton">Delete Event</paper-tooltip>
+				<paper-button class="cancel" raised on-tap="close">Cancel</paper-button>
+				<paper-button raised disabled$="[[!formValid]]" on-tap="saveEvent">Save</paper-button>
+			</div>
+		</paper-dialog>
+	</template>
+
+	<script>
+
+	Polymer({
+
+		is: 'event-editor',
+
+		properties: {
+			eventTitle: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventImage: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventType: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventHost: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventStart: {
+				type: String,
+				value: '',
+				notify: true,
+				observer: 'setMinEnd'
+			},
+			eventEnd: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			minEnd: {
+				type: String,
+				notify: true
+			},
+			eventGuests: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventLocation: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			eventInfo: {
+				type: String,
+				value: '',
+				notify: true
+			},
+			validTitle: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			validType: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			validHost: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			validLocation: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			validStart: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			validEnd: {
+				type: Boolean,
+				value: false,
+				notify: true
+			},
+			formValid: {
+				type: Boolean,
+				notify: true
+			}
+		},
+
+		ready: function() {
+			this.formValid = false;
+		},
+
+		observers: [
+			'_validityCheck(validTitle, validType, validHost, validLocation, validStart, validEnd, eventGuests)'
+		],
+
+		setMinEnd: function(val) {
+			if (val) {
+				this.minEnd = moment(val).add(1, 'h').format('YYYY-MM-DDTHH:mm');
+			}
+		},
+
+		_validityCheck: function(validTitle, validType, validHost, validLocation, validStart, validEnd, eventGuests) {
+			if (validTitle === false &&
+					validType === false &&
+					validHost === false &&
+					validLocation === false &&
+					validStart === false &&
+					validEnd === false &&
+					eventGuests !== '') {
+				return this.formValid = true;
+			}
+			else {
+				return this.formValid = false;
+			}
+		},
+
+		open: function(detail) {
+			this.eventTitle = detail.eventTitle;
+			this.eventType = detail.eventType;
+			this.eventHost = detail.eventHost;
+			this.eventLocation = detail.eventLocation;
+			this.eventStart = detail.eventStart;
+			this.eventEnd = detail.eventEnd;
+			this.eventGuests = detail.eventGuests;
+			this.eventImage = detail.eventImage;
+			this.eventInfo = detail.eventInfo;
+
+			return this.$.editorDialog.open();
+		},
+
+		saveEvent: function(e, detail) {
+			var self = this;
+			this.fire('save', {
+				title: self.eventTitle,
+				image: self.eventImage,
+				type: self.eventType,
+				host: self.eventHost,
+				start: self.eventStart,
+				end: self.eventEnd,
+				guests: self.eventGuests,
+				location: self.eventLocation,
+				info: self.eventInfo
+			}, {bubbles: false});
+
+			return this.close();
+		},
+
+		deleteEvent: function(e, detail) {
+			this.fire('delete', null, {bubbles: false});
+			return this.close();
+		},
+
+		close: function() {
+			return this.$.editorDialog.close();
+		}
+
+	});
+
+	</script>
+</dom-module>
