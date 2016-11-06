@@ -2,7 +2,7 @@
   "entrypoint": "index.html",
   "shell": "src/event-app/event-app.html",
   "fragments": [
-    "src/event-app/event-lists.html",
+    "src/event-app/event-events.html",
     "src/event-app/event-user.html",
     "src/event-app/event-signin.html",
     "src/event-app/event-signup.html"

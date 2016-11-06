@@ -22,15 +22,17 @@
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="event-home.html">
+<!-- <link rel="import" href="classical.html"> -->
 
 <dom-module id="event-app">
     <template>
       <style>
         :host {
         --primary-color: #f52757;
-        --secondary-color: #1e88e5;
+        --secondary-color: #03A9F4;
         --light-gray: #eceff1;
         --dark-gray: #263238;
+        --bg-color: #484e6e;
         --primary-text: rgba(0, 0, 0, 0.8);
         --secondary-text: rgba(0, 0, 0, 0.6);
         --disabled-color: #8c8c8c;
@@ -38,9 +40,7 @@
         --paper-input-container-focus-color: var(--secondary-color);
         --paper-input-container-invalid-color: var(--primary-color);
         visibility: hidden;
-
         background-color: var(--light-gray);
-
         --paper-button: {
           background-color: var(--secondary-color);
           color: #fff;
@@ -64,7 +64,8 @@
       }
 
       .drawer-header {
-        background-color: var(--dark-gray);
+        background-color: var(--bg-color);
+        color: var(--light-gray);
       }
 
       .content {
@@ -113,8 +114,17 @@
         cursor: pointer;
       }
 
+      paper-button {
+        text-transform: none;
+      }
 
-      @media (max-width: 599px) {
+      .home-logo {
+        border-radius: 50%;
+        vertical-align: middle;
+        transition: transform 0.2s ease-out;
+      }
+
+      @media (max-width: 640px) {
         .header-theme {
           justify-content: flex-start;
         }
@@ -127,30 +137,29 @@
             data="{{routeData}}"
             tail="{{subroute}}">
         </app-route>
-    <firebase-auth
-      id="auth"
-      app-name="events"
-      signed-in="{{signedIn}}"
-      user="{{user}}">
-    </firebase-auth>
-	
-    <firebase-document
-      id="userStuff"
-      app-name="events"
-      path="/users/[[user.uid]]/info"
-      data="{{userInfo}}">
-    </firebase-document>
+        <firebase-auth
+          id="auth"
+          app-name="events"
+          signed-in="{{signedIn}}"
+          user="{{user}}">
+        </firebase-auth>
+        <firebase-document
+          id="userStuff"
+          app-name="events"
+          path="/users/[[user.uid]]/info"
+          data="{{userInfo}}">
+        </firebase-document>
         <app-drawer-layout fullbleed force-narrow>
             <!-- Drawer toggle for smaller screens -->
             <app-drawer id="drawer">
-                <app-toolbar class="drawer-header"></app-toolbar>
+                <app-toolbar class="drawer-header">Menu</app-toolbar>
                 <paper-menu selected="[[page]]" attr-for-selected="name" >
                     <paper-item name="signin" hidden$="[[signedIn]]">
                         <a class="item" href="/signin/">Sign In</a>
                     </paper-item>
-                    <paper-item name="signup" hidden$="[[signedIn]]">
-                        <a class="item" href="/signup/">Sign Up</a>
-                    </paper-item>
+                    <paper-button raised name="signup" hidden$="[[signedIn]]">
+                        <a class="item" href="/signup/">+ Create Event</a>
+                    </paper-button>
                     <paper-item name="events">
                         <a class="item" href="/events/" hidden$="[[!signedIn]]">Events</a>
                     </paper-item>
@@ -164,16 +173,20 @@
             </app-drawer>
             <!-- Main content  -->
             <app-header-layout>
-                <app-header reveals shadow >
+                <app-header reveals shadow>
                     <app-toolbar class="header-theme">
                         <paper-icon-button icon="menu" drawer-toggle hidden$="{{wideLayout}}"></paper-icon-button>
                         <div class="title" style="position: relative">
-                          <a href="/">{{title}}</a>
+                          <img class="home-logo" src="../../icons/icon-48.png" alt="India Events logo">
+                          <a class="title-text" href="/">{{title}}
+                          </a>
                         </div>
                         <iron-selector selected="[[page]]" attr-for-selected="name" hidden$="{{!wideLayout}}">
                           <a class="navlink" name="signin" href="/signin/" hidden$="[[signedIn]]">Sign In</a>
                           <a class="navlink" name="signup" href="/signup/" hidden$="[[signedIn]]">Sign Up</a>
                           <a class="navlink" name="events" href="/events/" hidden$="[[!signedIn]]">Events</a>
+                          <a name="signup" href="/signup/" hidden$="[[signedIn]]">
+                          <paper-button raised>+ Create Event</paper-button></a>
                           <a class="navlink" name="user" href="/user/" hidden$="[[!signedIn]]">Me</a>
                           <a class="navlink" on-tap="logout" href="/" hidden$="[[!signedIn]]">Logout</a>
                         </iron-selector>
@@ -186,7 +199,7 @@
                   entry-animation="slide-from-bottom-animation"
                   exit-animation="slide-down-animation">
                   <event-home name="home"></event-home>
-                  <event-lists name="events"></event-lists>
+                  <event-events name="events"></event-events>
                   <event-signin id="signinPage" name="signin" on-sign-in="signIn" page="[[page]]"></event-signin>
                   <event-signup name="signup" on-sign-up="signUp" page="[[page]]"></event-signup>
                   <event-user name="user" user="[[user]]"></event-user>
@@ -211,7 +224,7 @@
         },
         title: {
           type: String,
-          value: 'Coimbatore\'s Events!'
+          value: 'India\'s Events!'
         },
         wideLayout: {
           type: Boolean,
@@ -238,7 +251,7 @@
       _routePathChanged: function(page) {
         // Check for authorized user, preventing users not signed in from accessing the "user" or "events" views
         if (!this.signedIn) {
-          if (page === 'user' || page === 'events') {
+          if (page === 'user') {
             this.set('routeData.page', 'signin');
           }
           else {
@@ -273,10 +286,14 @@
       // Lazy-load observer. When routeData.page changes, import the new view
       _pageChanged: function(page, oldPage) {
         if (page) {
-          this.importHref(
-            this.resolveUrl('event-' + page + '.html'), null, null, true);
+          var resolvedPageUrl = this.resolveUrl('event-' + page + '.html');
+          this.importHref(resolvedPageUrl, null, this._showPage404, true);
           this.$.drawer.opened = false;
         }
+      },
+
+      _showPage404: function(){
+        this.page = 'view404';
       },
 
       // Firebase promise to create user.
